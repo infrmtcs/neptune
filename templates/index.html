@@ -1,28 +1,27 @@
 {% extends 'base.html' %}
-
 {% block BSCT_CONTENT %}
-    <div class="bs-docs-section">
-        {% if posts_list %}
-            {% for post in posts_list %}
-            <div class="panel panel-success">
-                <div class="panel-heading">
-                <h3 class="panel-title">
-                    <b>From:</b>
-                    {{ post.author }}
-                    <br/>
-                    <b>To:</b>
-                    {{ post.receiver }}
-                    <br/>
-                    <small style = "color: gray">{{ post.postedtime }}</small>
-                </h3>
-                </div>
-                <div class="panel-body">
-                    <p>{{ post.content }}</p>
-                </div>
-            </div>
-            {% endfor %}
-        {% else %}
-            <p>No post are available.</p>
-        {% endif %}
-    </div>
+<div class="bs-docs-section">
+	{% if posts_list %}
+	{% for post in posts_list %}
+	<div class="panel panel-success">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<b>From:</b>
+				{{ post.author }}
+				<br/>
+				<b>To:</b>
+				{{ post.receiver }}
+				<br/>
+				<small style = "color: gray">{{ post.postedtime }}</small>
+			</h3>
+		</div>
+		<div class="panel-body">
+			<p>{{ post.content }}</p>
+		</div>
+	</div>
+	{% endfor %}
+	{% else %}
+	<p>No post are available.</p>
+	{% endif %}
+</div>
 {% endblock %}

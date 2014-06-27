@@ -1,58 +1,40 @@
 {% extends 'base.html' %}
 
 {% block BSCT_CONTENT %}
-    <h3>Add Confession</h3>
+<h3>Add Confession</h3>
 
-    <form class="form-horizontal" action="{% url "confession_post" %}" method="POST">
-      {% csrf_token %}
-      <ul>
-        <div class="well bs-component">
-            {{ form.non_field_errors }}
-            <div class="form-group">
-                {{ form.author.errors }}
-                <label class="col-lg-2 for="id_author">Author:</label>
-                <div class="col-lg-10">
-                {{ form.author }}
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form.receiver.errors }}
-                <label class="col-lg-2 for="id_receiver">Receiver:</label>
-                <div class="col-lg-10">
-                {{ form.receiver }}
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form.content.errors }}
-                <label class="col-lg-2 for="id_sender">Content:</label>
-                <div class="col-lg-10">
-                {{ form.content }}
-                </div>
-            </div>
-            <input id="save_contact" class="btn btn-primary btn-xs" style="display: block;" type="submit" value="Save" />
-        </div>
-      </ul>
-    </form>
+<form class="form-horizontal" action="{% url "confession_post" %}" method="POST">
+	{% csrf_token %}
+	<ul>
+		<div class="well bs-component">
+			{{ form.non_field_errors }}
+			<div class="form-group">
+				{{ form.author.errors }}
+				<label class="col-lg-2 for="id_author">Author:</label>
+				<div class="col-lg-10">
+					{{ form.author }}
+				</div>
+			</div>
+			<div class="form-group">
+				{{ form.receiver.errors }}
+				<label class="col-lg-2 for="id_receiver">Receiver:</label>
+				<div class="col-lg-10">
+					{{ form.receiver }}
+				</div>
+			</div>
+			<div class="form-group">
+				{{ form.content.errors }}
+				<label class="col-lg-2 for="id_sender">Content:</label>
+				<div class="col-lg-10">
+					{{ form.content }}
+				</div>
+			</div>
+			<input id="save_contact" class="btn btn-primary btn-xs" style="display: block;" type="submit" value="Save" />
+		</div>
+	</ul>
+</form>
 
-    <a href="{% url "confession_index" %}">back to index</a>
+<a href="{% url "confession_index" %}">back to index</a>
 
 {% endblock %}
 
-<!--
-<!DOCTYPE html>
-<html>
-<head>
-
-</head>
-<body>
-
-    <form method  = 'post' action=''>
-
-
-        <textarea name="confession_text" cols = "100" rows = "30">Enter your confession here...</textarea>
-        <br />
-        <input type="submit" value="Post"/>
-    </form>
-</body>
-</html>
---!>
