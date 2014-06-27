@@ -1,86 +1,84 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Bootswatch: Amelia</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.css" media="screen">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/bootswatch.min.css">
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css">
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
-      <script src="../bower_components/respond/dest/respond.min.js"></script>
-    <![endif]-->
-    <script>
+<head>
+  <meta charset="utf-8">
+  <title>Neptune</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.css" media="screen">
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/bootswatch.min.css">
+  <link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css">
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
+<script src="../bower_components/respond/dest/respond.min.js"></script>
+<![endif]-->
+</head>
+<body>
+  <div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <a href="../" class="navbar-brand">Bootswatch</a>
+        <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="navbar-collapse collapse" id="navbar-main">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="../confession/index">Index</a>
+          </li>
+          <li>
+            <a href="../confession/post">Post</a>
+          </li>
+        </ul>
 
-     var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-23019901-1']);
-      _gaq.push(['_setDomainName', "bootswatch.com"]);
-        _gaq.push(['_setAllowLinker', true]);
-      _gaq.push(['_trackPageview']);
+      </div>
+    </div>
+  </div>
 
-     (function() {
-       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-     })();
 
-    </script>
-  </head>
-  <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a href="../" class="navbar-brand">Bootswatch</a>
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-          <ul class="nav navbar-nav">
-            <li>
-              <a href="../confession/index">Index</a>
-            </li>
-            <li>
-              <a href="../confession/post">Post</a>
-            </li>
-          </ul>
-
+  <div clas="container">
+    <div class="page-header" id="banner">
+      <div class="row">
+        <div class="col-lg-6">
+          <h1>Neptune</h1>
+          <p class="lead">Love and Emotion</p>
         </div>
       </div>
     </div>
+    {% block BSCT_CONTENT %}{% endblock %}
+  </div>
+  <footer>
+    <div class="row">
+      <div class="col-lg-12">
+        <p>Created by <a href="DuongDat.Informatics@rocketmail.com">Duong Dat</a> and <a href="thanhnguyen17101994@gmail.com">Thanh Nguyen</a> </p>
 
-
-    <div clas="container">
-        <div class="page-header" id="banner">
-        <div class="row">
-          <div class="col-lg-6">
-            <h1>NUS Confession</h1>
-            <p class="lead">Love and Emotion</p>
-          </div>
-        </div>
       </div>
-      {% block BSCT_CONTENT %}{% endblock %}
     </div>
-      <footer>
-        <div class="row">
-          <div class="col-lg-12">
-            <p>Created by <a href="infrmcts@yahoo.com">Duong Dat</a> and <a href="thanhnguyen17101994@gmail.com">Thanh Nguyen</a> </p>
+  </footer>
+</div>
 
-          </div>
-        </div>
-
-
-      </footer>
-
-
-    </div>
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="../assets/js/bootswatch.js"></script>
-  </body>
+<!--BEGIN OF SCRIPTS-->
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../assets/js/bootswatch.js"></script>
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-23019901-1']);
+_gaq.push(['_setDomainName', "bootswatch.com"]);
+_gaq.push(['_setAllowLinker', true]);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+</script> 
+<!--END OF SCRIPTS-->
+</body>
 </html>
