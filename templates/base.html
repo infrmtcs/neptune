@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:fb="http://ogp.me/ns/fb#">
 <head>
 	<meta charset="utf-8">
 	<title>Neptune</title>
@@ -15,6 +15,25 @@
 <![endif]-->
 </head>
 <body>
+	<!--Facebook-->
+	<div id="fb-root"></div>
+	<script>
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId      : '600831223364085',
+			xfbml      : true,
+			version    : 'v2.0'
+		});
+	};
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) return;
+		js = d.createElement(s); js.id = id;
+		js.src = "http://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+	</script>
+
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
@@ -34,14 +53,20 @@
 						<a href="../confession/post">Post</a>
 					</li>
 				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						{% block LOGIN_BUTTON %}
+						<a>
+							<fb:login-button max_rows="1" size="large" show_faces="false" auto_logout_link="true">Login with Facebook</fb:login-button>
+						</a>
+						{% endblock %}
+					</li>
+				</ul>
 			</div>
-			{% block LOGIN_BUTTON %}
-			{% endblock %}
 		</div>
 	</div>
 
-
-	<div clas="container">
+	<div class="container">
 		<div class="page-header" id="banner">
 			<div class="row">
 				<div class="col-lg-6">
@@ -78,8 +103,12 @@ _gaq.push(['_trackPageview']);
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script>
+
+<!--Twitter-->
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 </script> 
+
+
 <!--END OF SCRIPTS-->
 </body>
 </html>

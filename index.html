@@ -3,7 +3,60 @@
 	<title></title>
 </head>
 <body>
-    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-    <a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-text="I'm testing">Tweet</a>
-</body>
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '600831223364085',
+          xfbml      : true,
+          version    : 'v2.0'
+        });
+      };
+
+      (function(d, s, id){
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {return;}
+         js = d.createElement(s); js.id = id;
+         js.src = "http://connect.facebook.net/en_US/sdk.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       }(document, 'script', 'facebook-jssdk'));
+    </script>
+<div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false">fuc</div>
+
+<h1>Defaults</h1>
+<fb:login-button onlogin="Log.info('onlogin callback')">
+</fb:login-button>
+
+<h1>autologoutlink</h1>
+<fb:login-button autologoutlink="true"
+                 onlogin="Log.info('onlogin callback')">
+</fb:login-button>
+
+<h1>Small with Custom Text</h1>
+<fb:login-button size="small"
+                 onlogin="Log.info('onlogin callback')">
+  Connect
+</fb:login-button>
+
+<h1>Medium with Custom Text</h1>
+<fb:login-button size="medium"
+                 onlogin="Log.info('onlogin callback')">
+  Connect with Facebook
+</fb:login-button>
+
+<h1>Large with Custom Text</h1>
+<fb:login-button size="large"
+                 onlogin="Log.info('onlogin callback')">
+  Login with Facebook
+</fb:login-button>
+
+<h1>Extra Large with Custom Text</h1>
+<fb:login-button size="xlarge"
+                 onlogin="Log.info('onlogin callback')">
+  Find Friends
+</fb:login-button>
+
+<h1>Favicon Only</h1>
+<fb:login-button size="icon"
+                 onlogin="Log.info('onlogin callback')">
+</fb:login-button></body>
 </html>
