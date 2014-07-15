@@ -1,0 +1,4 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="../assets/js/bootswatch.js"></script>
+<link rel="stylesheet" href="{{ STATIC_URL }}css/bootswatch.min.css">

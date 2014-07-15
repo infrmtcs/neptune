@@ -6,7 +6,6 @@
 	<title>Neptune</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap.css" media="screen">
-	<link rel="stylesheet" href="{{ STATIC_URL }}css/bootswatch.min.css">
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/custom.css">
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
@@ -15,26 +14,6 @@
 <![endif]-->
 </head>
 <body>
-	<!--Facebook-->
-	<div id="fb-root"></div>
-	<script>
-	window.fbAsyncInit = function() {
-		FB.init({
-			appId      : '600845196696021', //this is the nusneptunetestone
-			//appId      : '600831223364085', the real app
-			cookie     : true,
-			xfbml      : true,
-			version    : 'v2.0'
-		});
-	};
-	(function(d, s, id) {
-		var js, fjs = d.getElementsByTagName(s)[0];
-		if (d.getElementById(id)) return;
-		js = d.createElement(s); js.id = id;
-		js.src = "http://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
-		fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));
-	</script>
 
 	<div class="navbar navbar-default navbar-fixed-top">
 		<div class="container">
@@ -87,12 +66,9 @@
 			</div>
 		</div>
 	</footer>
-</div>
 
 <!--BEGIN OF SCRIPTS-->
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="../assets/js/bootswatch.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-23019901-1']);
@@ -105,10 +81,29 @@ _gaq.push(['_trackPageview']);
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 })();
 </script>
-
 <!--Twitter-->
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
 </script> 
+<!--Facebook-->
+<div id="fb-root"></div>
+<script>
+window.fbAsyncInit = function() {
+	FB.init({
+		//appId      : '600845196696021',
+		appId      : '600831223364085',
+		cookie     : true,
+		xfbml      : true,
+		version    : 'v2.0'
+	});
+};
+(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "http://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.0";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
+</script>
 
 
 <!--END OF SCRIPTS-->
