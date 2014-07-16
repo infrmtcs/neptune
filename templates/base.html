@@ -38,7 +38,7 @@
 					<li>
 						{% block LOGIN_BUTTON %}
 						<a>
-							<fb:login-button max_rows="1" size="large" show_faces="false" auto_logout_link="true">Login with Facebook</fb:login-button>
+							<fb:login-button max_rows="1" size="large" show_faces="false" auto_logout_link="true" onlogin="checkOnLogin();">Login with Facebook</fb:login-button>
 						</a>
 						{% endblock %}
 					</li>
@@ -69,6 +69,7 @@
 
 <!--BEGIN OF SCRIPTS-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap.js"></script>
 <script>
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-23019901-1']);
@@ -86,6 +87,7 @@ _gaq.push(['_trackPageview']);
 </script> 
 <!--Facebook-->
 <div id="fb-root"></div>
+<script src="{{ STATIC_URL }}js/custom.js"></script>
 <script>
 window.fbAsyncInit = function() {
 	FB.init({
@@ -104,8 +106,7 @@ window.fbAsyncInit = function() {
 	fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 </script>
-
-
 <!--END OF SCRIPTS-->
+
 </body>
 </html>
