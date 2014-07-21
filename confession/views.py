@@ -18,34 +18,35 @@ from confession.models import Post
 #     model = Post
 #     fields = ('content', 'author', 'receiver')
 
-    # def save(self, commit=True):
-    #     self.instance.postedtime = datetime.datetime.now();
-    #     if self.instance.pk == None:
-    #         self.instance.deadline = \
-    #             datetime.datetime.now() + datetime.timedelta(hours=3)
-    #     return super(UserForm, self).save(commit)
+	# def save(self, commit=True):
+	#     self.instance.postedtime = datetime.datetime.now();
+	#     if self.instance.pk == None:
+	#         self.instance.deadline = \
+	#             datetime.datetime.now() + datetime.timedelta(hours=3)
+	#     return super(UserForm, self).save(commit)
+
 
 
 class PostView(generic.CreateView):
-    model = Post
-    template_name = 'post.html'
-    # form_class = UserForm
-    fields = ("content", "author", "receiver")
+	model = Post
+	template_name = 'post.html'
+	# form_class = UserForm
+	fields = ("content", "author", "receiver")
 
-    def get_success_url(self):
-        return reverse('confession_index')
+	def get_success_url(self):
+		return reverse('confession_index')
 
-    def form_valid(self, form):
-        form.instance.postedtime = datetime.datetime.now()
-        form.instance.deadline = datetime.datetime.now()
-        return super(PostView, self).form_valid(form)
+	def form_valid(self, form):
+		form.instance.postedtime = datetime.datetime.now()
+		form.instance.deadline = datetime.datetime.now()
+		return super(PostView, self).form_valid(form)
 
 
 
 class IndexView(generic.ListView):
-    template_name = 'index.html'
-    context_object_name = 'posts_list'
-    model = Post
+	template_name = 'index.html'
+	context_object_name = 'posts_list'
+	model = Post
 
-    def get_queryset(self):
-        return Post.objects.values()
+	def get_queryset(self):
+		return Post.objects.values()
