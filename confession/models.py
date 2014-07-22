@@ -1,8 +1,16 @@
 from django.db import models
 from django.forms import DateField
-from userlogin.models import User
 import datetime
 
+class User(models.Model):
+	fb_id = models.CharField(max_length = 50)
+	fullname = models.CharField(max_length = 50)
+	timezone = models.IntegerField(default = 8)
+	postcount = models.IntegerField(default = 0)
+	
+	def __str__(self):
+		return self.fb_id
+		
 class Post(models.Model):
 	author = models.ForeignKey(User, related_name = 'author')
 	receiver = models.ForeignKey(User, related_name = 'receiver')
@@ -12,3 +20,4 @@ class Post(models.Model):
 	
 	def __str__(self):
 		return self.content
+
