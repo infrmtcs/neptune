@@ -3,8 +3,8 @@ from django.forms import DateField
 import datetime
 
 class User(models.Model):
-	fb_id = models.CharField(max_length = 50)
-	fullname = models.CharField(max_length = 50)
+	fb_id = models.CharField(max_length = 200)
+	fullname = models.CharField(max_length = 200)
 	timezone = models.IntegerField(default = 8)
 	postcount = models.IntegerField(default = 0)
 	

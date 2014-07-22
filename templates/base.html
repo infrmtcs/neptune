@@ -64,12 +64,14 @@
 			</div>
 		</div>
 	</footer>
+	<form method="post" id="info-wrapper">{% csrf_token %}</form>
 
 <!--BEGIN OF SCRIPTS-->
 <div id="fb-root"></div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="{{ STATIC_URL }}js/bootstrap.js"></script>
 <script src="{{ STATIC_URL }}js/custom.js"></script>
+
 <!--END OF SCRIPTS-->
 
 </body>

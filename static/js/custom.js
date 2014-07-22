@@ -1,22 +1,18 @@
-function postToURL(url, values) {
-	values = values || {};
-	var form = document.createElement("form", {action: url, method: "POST", style: "display: none"});
-	for (var property in values) {
-		if (values.hasOwnProperty(property)) {
-			var value = values[property];
-			if (value instanceof Array) {
-				for (var i = 0, l = value.length; i < l; i++) {
-					form.appendChild(document.createElement("input", {type: "hidden", name: property, value: value[i]}));
-				}
-			} else {
-				form.appendChild(document.createElement("input", {type: "hidden", name: property, value: value}));
-				console.log(property + "    " + value);
-			}
+function postToURL(path, params, method) {
+	method = method || "post";
+	form = document.getElementById("info-wrapper");
+	form.setAttribute("action", path);
+	for(var key in params) {
+		if(params.hasOwnProperty(key)) {
+			var hiddenField = document.createElement("input");
+			hiddenField.setAttribute("type", "hidden");
+			hiddenField.setAttribute("name", key);
+			hiddenField.setAttribute("value", params[key]);
+			form.appendChild(hiddenField);
 		}
 	}
-	// document.body.appendChild(form);
-	// form.submit();
-	// document.body.removeChild(form);
+	document.body.appendChild(form);
+	form.submit();
 }
 
 function statusChangeCallback(response) {
@@ -25,7 +21,7 @@ function statusChangeCallback(response) {
 			function (response) {
 				postToURL("/confession/index", response);
 			}
-		);
+			);
 	} else {
 		console.log("logged out");
 	}
@@ -48,7 +44,9 @@ _gaq.push(['_trackPageview']);
 	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();window.fbAsyncInit = function() {
+})();
+
+window.fbAsyncInit = function() {
 	FB.init({
 		appId      : '600831223364085',
 		cookie     : true,

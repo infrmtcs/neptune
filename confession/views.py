@@ -1,11 +1,11 @@
 import datetime
 from django.core.urlresolvers import reverse
+from django.core.context_processors import csrf
+from django.template import RequestContext
 from django.db import connection
 from django.forms import forms
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
-
-# Create your views here.
+from django.shortcuts import render, render_to_response
 from django.views import generic
 from confession.models import Post, User
 
@@ -26,26 +26,31 @@ from confession.models import Post, User
 	#     return super(UserForm, self).save(commit)
 
 def checkUser(request):
+	print request.POST
 	if 'fb_id' in request.session:
 		return
 	if 'id' in request.POST and request.POST['id']:
-		sql = 'SELECT * FROM userlogin_user WHERE fb_id = \"'+ request.POST['id'] + '\";'
+		sql = 'SELECT * FROM userlogin_user WHERE fb_id = \''+ request.POST['id'] + '\';'
+		print sql
 		users = User.objects.raw(sql);
 		if len(list(users)):
 			pass
 		else:
 			cursor = connection.cursor()
-			sql = 'INSERT INTO userlogin_user(fb_id, fullname, timezone, postcount) VALUES(\"' \
-				  + request.POST['id'] + '\",\"' \
-				  + request.POST['name'] + '\", ' \
-				  + request.POST['timezone'] + ', 0'
+			sql = 'INSERT INTO userlogin_user(fb_id, fullname, timezone, postcount) VALUES(\'' \
+				  + request.POST['id'] + '\',\'' \
+				  + request.POST['name'] + '\',\'' \
+				  + request.POST['timezone'] + '\', \'0\');'
+			print sql
 			cursor.execute(sql)
+			print "everything done"
 		sql = 'SELECT * FROM userlogin_user WHERE fb_id = \"'+ request.POST['id'] + '\";'
 		users = User.objects.raw(sql);
 		for i in users:
 			request.session['fb_id'] = i.fb_id
 			break
 	else:
+		print "Dat 2"
 		pass
 
 
@@ -64,11 +69,17 @@ class PostView(generic.CreateView):
 		form.instance.deadline = datetime.datetime.now()
 		return super(PostView, self).form_valid(form)
 
+def IndexView(request):
+	checkUser(request)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	sql = 'SELECT * FROM confession_post'
+	return render_to_response("index.html", {'posts_list': Post.objects.raw(sql),}, context_instance)
 
-class IndexView(generic.ListView):
-	template_name = 'index.html'
-	context_object_name = 'posts_list'
-	model = Post
+# class IndexView(generic.ListView):
+# 	template_name = 'index.html'
+# 	context_object_name = 'posts_list'
+# 	model = Post
 
-	def get_queryset(self):
-		return Post.objects.values()
+# 	def get_queryset(self):
+# 		return Post.objects.values()
