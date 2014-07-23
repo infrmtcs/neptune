@@ -26,31 +26,41 @@ from confession.models import Post, User
 	#     return super(UserForm, self).save(commit)
 
 def checkUser(request):
+	print "---------------------------------------"
 	print request.POST
+	print request.session
+	print "---------------------------------------"
+	if 'log_out' in request.POST:
+		del request.session['fb_id']
+		print "logout successfully"
+		return
 	if 'fb_id' in request.session:
+		print "already logged in"
 		return
 	if 'id' in request.POST and request.POST['id']:
-		sql = 'SELECT * FROM userlogin_user WHERE fb_id = \''+ request.POST['id'] + '\';'
+		sql = 'SELECT * FROM confession_user WHERE fb_id = \''+ request.POST['id'] + '\';'
 		print sql
 		users = User.objects.raw(sql);
 		if len(list(users)):
-			pass
+			print "old user"
 		else:
+			print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO userlogin_user(fb_id, fullname, timezone, postcount) VALUES(\'' \
+			sql = 'INSERT INTO confession_user(fb_id, fullname, timezone, postcount) VALUES(\'' \
 				  + request.POST['id'] + '\',\'' \
 				  + request.POST['name'] + '\',\'' \
 				  + request.POST['timezone'] + '\', \'0\');'
 			print sql
 			cursor.execute(sql)
-			print "everything done"
-		sql = 'SELECT * FROM userlogin_user WHERE fb_id = \"'+ request.POST['id'] + '\";'
+			print "registered"
+		sql = 'SELECT * FROM confession_user WHERE fb_id = \"'+ request.POST['id'] + '\";'
 		users = User.objects.raw(sql);
 		for i in users:
 			request.session['fb_id'] = i.fb_id
 			break
+		print "logged in successfully"
 	else:
-		print "Dat 2"
+		print "no user detected"
 		pass
 
 

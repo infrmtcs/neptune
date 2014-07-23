@@ -1,3 +1,4 @@
+#-*- encoding=UTF-8 -*-
 from django.db import models
 from django.forms import DateField
 import datetime

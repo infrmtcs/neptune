@@ -17,13 +17,14 @@ function postToURL(path, params, method) {
 
 function statusChangeCallback(response) {
 	if (response.status == "connected") {
-		FB.api("/me",
+		FB.api ("/me",
 			function (response) {
 				postToURL("/confession/index", response);
 			}
-			);
-	} else {
-		console.log("logged out");
+		);
+	} else if (response.status == "unknown") {
+		console.log("logging out");
+		postToURL("/confession/index", {"log_out": true,});
 	}
 }
 
