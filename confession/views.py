@@ -46,18 +46,12 @@ def checkUser(request):
 		else:
 			print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO confession_user(fb_id, fullname, timezone, postcount) VALUES(\'' \
-				  + request.POST['id'] + '\',\'' \
-				  + request.POST['name'] + '\',\'' \
-				  + request.POST['timezone'] + '\', \'0\');'
+			sql = 'INSERT INTO confession_user(fb_id, postcount)' \
+				+ 'VALUES(\'' + request.POST['id'] + '\', 0);'
 			print sql
 			cursor.execute(sql)
 			print "registered"
-		sql = 'SELECT * FROM confession_user WHERE fb_id = \"'+ request.POST['id'] + '\";'
-		users = User.objects.raw(sql);
-		for i in users:
-			request.session['fb_id'] = i.fb_id
-			break
+		request.session['fb_id'] = request.POST['id']
 		print "logged in successfully"
 	else:
 		print "no user detected"
