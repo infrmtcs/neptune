@@ -1,0 +1,2 @@
+CREATE DATABASE Neptune DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+GRANT ALL ON Neptune.* TO 'infrmtcs'@'localhost' IDENTIFIED BY '1nam2tuan';

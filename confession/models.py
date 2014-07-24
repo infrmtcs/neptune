@@ -18,7 +18,7 @@ class Post(models.Model):
 	content = models.TextField()
 	postedtime = models.DateTimeField()
 	deadline = models.DateTimeField()
-	
+	visible = models.BooleanField()
 	def __str__(self):
 		return self.content
 
