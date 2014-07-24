@@ -19,12 +19,12 @@ function statusChangeCallback(response) {
 	if (response.status == "connected") {
 		FB.api ("/me",
 			function (response) {
-				postToURL("/confession/index", response);
+				postToURL("/index", response);
 			}
 		);
 	} else if (response.status == "unknown") {
 		console.log("logging out");
-		postToURL("/confession/index", {"log_out": true,});
+		postToURL("/index", {"log_out": true,});
 	}
 }
 

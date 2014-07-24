@@ -4,9 +4,10 @@ from django.forms import DateField
 import datetime
 
 class User(models.Model):
-	fb_id = models.CharField(max_length = 200)
-	fullname = models.CharField(max_length = 200)
+	fb_id = models.CharField(max_length = 100)
+	fullname = models.CharField(max_length = 100)
 	postcount = models.IntegerField(default = 0)
+	link = models.CharField(max_length = 100)
 	
 	def __str__(self):
 		return self.fb_id

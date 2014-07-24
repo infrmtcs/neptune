@@ -9,21 +9,6 @@ from django.shortcuts import render, render_to_response
 from django.views import generic
 from confession.models import Post, User
 
-# class PostView(generic.CreateView):
-#     template_name = 'post.html'
-#     context_object_name = 'posts_list'
-#     model = Post
-
-# class UserForm(forms.Form):
-#     model = Post
-#     fields = ('content', 'author', 'receiver')
-
-	# def save(self, commit=True):
-	#     self.instance.postedtime = datetime.datetime.now();
-	#     if self.instance.pk == None:
-	#         self.instance.deadline = \
-	#             datetime.datetime.now() + datetime.timedelta(hours=3)
-	#     return super(UserForm, self).save(commit)
 
 def checkUser(request):
 	print "---------------------------------------"
@@ -31,7 +16,12 @@ def checkUser(request):
 	print request.session
 	print "---------------------------------------"
 	if 'log_out' in request.POST:
-		del request.session['fb_id']
+		if 'fb_id' in request.session:
+			del request.session['fb_id']
+		if 'fullname' in request.session:
+			del request.session['fullname']
+		if 'link' in request.session:
+			del request.session['link']
 		print "logout successfully"
 		return
 	if 'fb_id' in request.session:
@@ -42,14 +32,20 @@ def checkUser(request):
 		print sql
 		users = User.objects.raw(sql);
 		if len(list(users)):
+			for user in users:
+				if user.fullname != request.POST['name']:
+					pass
+				request.session['link'] = user.link
+				break
 			print "old user"
 		else:
 			print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO confession_user(fb_id, fullname, postcount)' \
-				+ 'VALUES(\'' + request.POST['id'] + '\', \'' + request.POST['name'] + '\', 0);'
+			sql = 'INSERT INTO confession_user(fb_id, fullname, link, postcount)' \
+				+ 'VALUES(\'' + request.POST['id'] + '\', \'' + request.POST['name'] + '\', \'' + request.POST['name'] + '\', 0);'
 			print sql
 			cursor.execute(sql)
+			request.session['link'] = request.POST['id']
 			print "registered"
 		request.session['fb_id'] = request.POST['id']
 		request.session['fullname'] = request.POST['name']
@@ -57,8 +53,6 @@ def checkUser(request):
 	else:
 		print "no user detected"
 		pass
-
-
 
 class PostView(generic.CreateView):
 	model = Post
@@ -75,6 +69,13 @@ class PostView(generic.CreateView):
 		return super(PostView, self).form_valid(form)
 
 def IndexView(request, wall=None):
+	checkUser(request)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	sql = 'SELECT * FROM confession_post'
+	return render_to_response("index.html", {'posts_list': Post.objects.raw(sql),}, context_instance)
+
+def WallView(request, wall=None):
 	checkUser(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
