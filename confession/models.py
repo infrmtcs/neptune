@@ -5,6 +5,7 @@ import datetime
 
 class User(models.Model):
 	fb_id = models.CharField(max_length = 200)
+	fullname = models.CharField(max_length = 200)
 	postcount = models.IntegerField(default = 0)
 	
 	def __str__(self):

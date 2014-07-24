@@ -46,12 +46,13 @@ def checkUser(request):
 		else:
 			print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO confession_user(fb_id, postcount)' \
-				+ 'VALUES(\'' + request.POST['id'] + '\', 0);'
+			sql = 'INSERT INTO confession_user(fb_id, fullname, postcount)' \
+				+ 'VALUES(\'' + request.POST['id'] + '\', \'' + request.POST['name'] + '\', 0);'
 			print sql
 			cursor.execute(sql)
 			print "registered"
 		request.session['fb_id'] = request.POST['id']
+		request.session['fullname'] = request.POST['name']
 		print "logged in successfully"
 	else:
 		print "no user detected"
@@ -73,7 +74,7 @@ class PostView(generic.CreateView):
 		form.instance.deadline = datetime.datetime.now()
 		return super(PostView, self).form_valid(form)
 
-def IndexView(request):
+def IndexView(request, wall=None):
 	checkUser(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
