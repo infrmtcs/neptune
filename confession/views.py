@@ -6,7 +6,6 @@ from django.db import connection
 from django.forms import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
-from django.views import generic
 from confession.models import Post, User
 
 
@@ -51,66 +50,62 @@ def checkUser(request):
 		# print "no user detected"
 		pass
 
-class PostView(generic.CreateView):
-	model = Post
-	template_name = 'post.html'
-	# form_class = UserForm
-	fields = ("content", "author", "receiver")
-
-	def get_success_url(self):
-		return reverse('confession_index')
-
-	def form_valid(self, form):
-		form.instance.postedtime = datetime.datetime.now()
-		form.instance.deadline = datetime.datetime.now()
-		return super(PostView, self).form_valid(form)
-
 def checkNewPost(request, wall_owner = None):
-	if request.POST['new_content'] != "":
-		cursor = connection.cursor()
-		sql = 'INSERT INTO confession_post \
-		(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
-		VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
-		if 'fb_id' in request.session:
-			author = request.session['fb_id']
-		else:
-			author = '-1'
-		receiver = wall_owner
-		content = request.POST['new_content']
-		postedtime = datetime.datetime.now()
-		deadline = datetime.datetime.now()
-		visible = False
-		if ('fb_id' in request.session) and ('new_anonymous' not in request.POST):
-			displayed_sender = request.session['fullname']
-			displayed_sender_link = request.session['link']
-		else:
-			displayed_sender = 'Anonymous'
-			displayed_sender_link = '/'
-		cursor.execute(sql, [displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible])
+	cursor = connection.cursor()
+	sql = 'INSERT INTO confession_post \
+	(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
+	VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
+	if 'fb_id' in request.session:
+		author = request.session['fb_id']
 	else:
-		pass
+		author = '-1'
+	receiver = wall_owner
+	content = request.POST['new_content']
+	postedtime = datetime.datetime.now()
+	deadline = datetime.datetime.now()
+	visible = False
+	if ('fb_id' in request.session) and ('new_anonymous' not in request.POST):
+		displayed_sender = request.session['fullname']
+		displayed_sender_link = request.session['link']
+	else:
+		displayed_sender = 'Anonymous'
+		displayed_sender_link = '/'
+	cursor.execute(sql, [displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible])
+
+def logForHTML(request):
+	data_dict = {}
+	if 'fb_id' in request.session:
+		data_dict['logged_user'] = request.session['fb_id']
+		data_dict['logged_user_name'] = request.session['fullname']
+		data_dict['logged_user_link'] = request.session['link']
+		data_dict['logged'] = True
+	else:
+		data_dict['logged_user_name'] = 'Anonymous'
+		data_dict['logged_user_link'] = '/'
+		data_dict['logged'] = False
+	return data_dict
 
 def HomeView(request):
 	checkUser(request)
+	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	return render_to_response("base.html", context_instance) #change to home.html later
+	return render_to_response("base.html", data_dict, context_instance) #change to home.html later
 
 def IndexView(request):
 	checkUser(request)
-	print request.session
+	data_dict = logForHTML(request)
 	if 'fb_id' not in request.session:
-		return redirect('/')
+		return redirect('/', data_dict)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
 	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = \'' + str(request.session['fb_id']) + '\';'
-	data_dict = {'posts_list': Post.objects.raw(sql), }
-	if 'fb_id' in request.session:
-		data_dict['logged_user'] = request.session['fb_id']
+	data_dict['posts_list'] = Post.objects.raw(sql)
 	return render_to_response("index.html", data_dict, context_instance)
 
 def WallView(request, wall = None):
 	checkUser(request)
+	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
 	if wall is None:
@@ -123,18 +118,23 @@ def WallView(request, wall = None):
 				wall_owner = user.fb_id
 				wall_name = user.fullname
 				break
+			just_post = False
 			if 'new_content' in request.POST:
-				checkNewPost(request, wall_owner)
+				if request.POST['new_content'] != "":
+					just_post = True
+					checkNewPost(request, wall_owner)
 			sql = 'SELECT * FROM confession_post WHERE visible AND receiver = ' + wall_owner
 			posts_list = Post.objects.raw(sql)
-			data_dict = {'posts_list': posts_list, }
+			data_dict['posts_list'] = posts_list
+			data_dict['just_post'] = just_post
 			data_dict['wall_name'] = wall_name
-			if 'fb_id' in request.session:
-				data_dict['logged_user_name'] = request.session['fullname']
-				data_dict['logged'] = True
-			else:
-				data_dict['logged_user_name'] = 'Anonymous'
-				data_dict['logged'] = False
 			return render_to_response("wall.html", data_dict, context_instance)
 		else:
 			return redirect('/') #No such user
+
+def SentView(request):
+	checkUser(request)
+	data_dict = logForHTML(request)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	return render_to_response("sent.html", data_dict, context_instance)

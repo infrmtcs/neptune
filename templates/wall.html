@@ -1,7 +1,14 @@
 {% extends 'index.html' %}
 {% block new_post %}
+{% if just_post %}
+	<div class="alert alert-dismissable alert-success">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>Done!</strong> You successfully posted a message!</a>.
+	</div>
+{% endif %}
 <form class="form-horizontal" role="form" action="" method="POST">
 	{% csrf_token %}
+
 	<div class="well bs-component">
 		{{ form.non_field_errors }}
 		<legend>What do you want to tell?</legend>
@@ -12,7 +19,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-md-1 col-sm-2 col-xs-4">
-				<button type="submit" class="btn btn-success">Send</button>
+				<button type="submit" class="btn btn-warning">Send</button>
 			</div>
 			<div class="col-md-4 col-sm-4 col-xs-4">
 				<div class="checkbox">

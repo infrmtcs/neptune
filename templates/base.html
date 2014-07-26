@@ -25,12 +25,14 @@
 			</div>
 			<div class="navbar-collapse collapse" id="navbar-main">
 				<ul class="nav navbar-nav">
-					<li>
-						<a href="/index">Index</a>
-					</li>
-					<li>
-						<a href="/post">Post</a>
-					</li>
+					{% if logged %}
+						<li>
+							<a href="/index">Inbox</a>
+						</li>
+						<li>
+							<a href="/{{ logged_user_link }}">Wall</a>
+						</li>
+					{% endif %}
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
 					<li>
@@ -49,13 +51,13 @@
 		<div class="page-header" id="banner">
 			<div class="row">
 				<div class="col-xs-6">
-					<h1>
+					<h1 style="font-family:inherit"><strong>
 						{% if logged_user_name != '-1' %}
 							{{ logged_user_name }}
 						{% else %}
 							Neptune
 						{% endif %}
-					</h1>
+					</strong></h1>
 				</div>
 			</div>
 		</div>
