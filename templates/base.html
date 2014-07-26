@@ -26,10 +26,10 @@
 			<div class="navbar-collapse collapse" id="navbar-main">
 				<ul class="nav navbar-nav">
 					<li>
-						<a href="../index">Index</a>
+						<a href="/index">Index</a>
 					</li>
 					<li>
-						<a href="../post">Post</a>
+						<a href="/post">Post</a>
 					</li>
 				</ul>
 				<ul class="nav navbar-nav navbar-right">
@@ -48,16 +48,22 @@
 	<div class="container">
 		<div class="page-header" id="banner">
 			<div class="row">
-				<div class="col-lg-6">
-					<h1>Neptune</h1>
-					<p class="lead">Love and Emotion</p>
+				<div class="col-xs-6">
+					<h1>
+						{% if logged_user_name != '-1' %}
+							{{ logged_user_name }}
+						{% else %}
+							Neptune
+						{% endif %}
+					</h1>
 				</div>
 			</div>
 		</div>
-		{% block BSCT_CONTENT %}{% endblock %}
+		{% block new_post %}{% endblock %}
+		{% block old_post %}{% endblock %}
 		<footer>
 			<div class="row">
-				<div class="col-lg-12">
+				<div class="col-xs-12">
 					<p>Created by <a href="DuongDat.Informatics@rocketmail.com">Duong Dat</a> and <a href="thanhnguyen17101994@gmail.com">Thanh Nguyen</a> </p>
 
 				</div>

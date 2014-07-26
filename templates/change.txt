@@ -2,3 +2,20 @@
 <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../assets/js/bootswatch.js"></script>
 <link rel="stylesheet" href="{{ STATIC_URL }}css/bootswatch.min.css">
+
+
+<form class="form-horizontal" action="{% url "confession_post" %}" method="POST">
+	<ul>
+		<div class="well bs-component">
+			{{ form.non_field_errors }}
+			<div class="form-group">
+				{{ form.content.errors }}
+				<label class="col-xs-2 for="id_sender">Content:</label>
+				<div class="col-xs-10">
+					{{ form.content }}
+				</div>
+			</div>
+			<input id="save_contact" class="btn btn-primary btn-xs" style="display: block;" type="submit" value="Save" />
+		</div>
+	</ul>
+</form>

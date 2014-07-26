@@ -1,6 +1,6 @@
 #-*- encoding=UTF-8 -*-
 from django.db import models
-from django.forms import DateField
+from django import forms
 import datetime
 
 class User(models.Model):
@@ -11,14 +11,14 @@ class User(models.Model):
 	
 	def __str__(self):
 		return self.fb_id
-		
+
 class Post(models.Model):
-	author = models.ForeignKey(User, related_name = 'author')
-	receiver = models.ForeignKey(User, related_name = 'receiver')
-	content = models.TextField()
+	displayed_sender = models.CharField(max_length = 100)
+	author = models.CharField(max_length = 100)
+	receiver = models.CharField(max_length = 100)
+	content = models.CharField(max_length = 1000)
 	postedtime = models.DateTimeField()
 	deadline = models.DateTimeField()
 	visible = models.BooleanField()
 	def __str__(self):
 		return self.content
-

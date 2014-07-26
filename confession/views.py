@@ -5,16 +5,12 @@ from django.template import RequestContext
 from django.db import connection
 from django.forms import forms
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
 from confession.models import Post, User
 
 
 def checkUser(request):
-	print "---------------------------------------"
-	print request.POST
-	print request.session
-	print "---------------------------------------"
 	if 'log_out' in request.POST:
 		if 'fb_id' in request.session:
 			del request.session['fb_id']
@@ -22,41 +18,37 @@ def checkUser(request):
 			del request.session['fullname']
 		if 'link' in request.session:
 			del request.session['link']
-		print "logout successfully"
+		# print "logout successfully"
 		return
 	if 'fb_id' in request.session:
-		print "already logged in"
+		# print "already logged in"
 		return
 	if 'id' in request.POST and request.POST['id']:
-		sql = 'SELECT * FROM confession_user WHERE fb_id = \''+ request.POST['id'] + '\';'
-		print sql
-		users = User.objects.raw(sql);
+		sql = 'SELECT * FROM confession_user WHERE fb_id = %s;'
+		users = User.objects.raw(sql, [request.POST['id']]);
 		if len(list(users)):
 			for user in users:
 				if user.fullname != request.POST['name']:
 					pass
-			print "old user"
+			# print "old user"
 		else:
-			print "new user added"
+			# print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO confession_user(fb_id, fullname, link, postcount)' \
-				+ 'VALUES(\'' + request.POST['id'] + '\', \'' + request.POST['name'] + '\', \'' + request.POST['id'] + '\', 0);'
-			print sql
-			cursor.execute(sql)
-			print "registered"
-		sql = 'SELECT * FROM confession_user WHERE fb_id = \''+ request.POST['id'] + '\';'
-		users = User.objects.raw(sql);
+			sql = 'INSERT INTO confession_user(fb_id, fullname, link, postcount) VALUES(%s, %s, %s, 0)'
+			cursor.execute(sql, [request.POST['id'], request.POST['name'], request.POST['id']])
+			# print "registered"
+		sql = 'SELECT * FROM confession_user WHERE fb_id = %s;'
+		users = User.objects.raw(sql, [request.POST['id']]);
 		for user in users:
 			if user.fb_id == request.POST['id']:
-				request.session['django_user_id'] = user.id
 				request.session['link'] = user.link
 				request.session['fb_id'] = user.fb_id
 				request.session['fullname'] = user.fullname
 				request.session['postcount'] = user.postcount
 				break
-		print "logged in successfully"
+		# print "logged in successfully"
 	else:
-		print "no user detected"
+		# print "no user detected"
 		pass
 
 class PostView(generic.CreateView):
@@ -73,27 +65,56 @@ class PostView(generic.CreateView):
 		form.instance.deadline = datetime.datetime.now()
 		return super(PostView, self).form_valid(form)
 
+# def checkNewPost(request):
+# 	if 'content' in request.POST:
+# 		if request.POST['content'] != "":
+# 			cursor = connection.cursor()
+# 			sql = 'INSERT INTO confession_post \
+# 			(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
+# 			VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
+# 			cursor.execute(sql, [])
+
+def HomeView(request):
+	checkUser(request)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	return render_to_response("base.html", context_instance) #change to home.html later
+
 def IndexView(request):
 	checkUser(request)
 	if 'fb_id' not in request.session:
-		return WallView(request)
-		print "no user"
+		return HomeView(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver_id = ' + str(request.session['django_user_id']) + ';'
-	return render_to_response("index.html", {'posts_list': Post.objects.raw(sql),}, context_instance)
+	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = \'' + str(request.session['fb_id']) + '\';'
+	data_dict = {'posts_list': Post.objects.raw(sql), }
+	if 'fb_id' in request.session:
+		data_dict['logged_user'] = request.session['fb_id']
+	return render_to_response("index.html", data_dict, context_instance)
 
 def WallView(request, wall = None):
 	checkUser(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	sql = 'SELECT * FROM confession_post WHERE receiver_id = \'-1\''
-	return render_to_response("index.html", {'posts_list': Post.objects.raw(sql),}, context_instance)
-
-# class IndexView(generic.ListView):
-# 	template_name = 'index.html'
-# 	context_object_name = 'posts_list'
-# 	model = Post
-
-# 	def get_queryset(self):
-# 		return Post.objects.values()
+	if wall is None:
+		return redirect('/')
+	else:
+		sql = 'SELECT * FROM confession_user WHERE link = \'' + str(wall) + '\'';
+		users = User.objects.raw(sql)
+		if len(list(users)):
+			for user in users:
+				wall_owner = user.fb_id
+				wall_name = user.fullname
+				break
+			sql = 'SELECT * FROM confession_post WHERE visible AND receiver = ' + wall_owner
+			data_dict = {'posts_list': Post.objects.raw(sql), }
+			data_dict['wall_name'] = wall_name
+			if 'fb_id' in request.session:
+				data_dict['logged_user_name'] = request.session['fullname']
+				data_dict['logged'] = True
+			else:
+				data_dict['logged_user_name'] = 'Anonymous'
+				data_dict['logged'] = False
+			return render_to_response("wall.html", data_dict, context_instance)
+		else:
+			return redirect('/') #No such user

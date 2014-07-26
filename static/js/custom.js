@@ -15,16 +15,16 @@ function postToURL(path, params, method) {
 	form.submit();
 }
 
-function statusChangeCallback(response) {
+function statusChangeCallback(response) 	{
 	if (response.status == "connected") {
 		FB.api ("/me",
 			function (response) {
-				postToURL("/index", response);
+				postToURL("", response);
 			}
 		);
 	} else if (response.status == "unknown") {
 		console.log("logging out");
-		postToURL("/index", {"log_out": true,});
+		postToURL("", {"log_out": true,});
 	}
 }
 
