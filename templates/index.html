@@ -6,7 +6,11 @@
 			<div class="panel panel-success">
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						<b>From:</b> {{ post.author }} <br/>
+						{% if post.displayed_sender_link != '/' %}
+							<b>From:</b> <a href="{{ post.displayed_sender_link }}">{{ post.displayed_sender }}</a> <br/>
+						{% else %}
+							<b>From:</b> {{ post.displayed_sender }} <br/>
+						{% endif %}
 						<small style = "color: gray">Sent at: {{ post.postedtime }}</small>
 					</h3>
 				</div>

@@ -65,14 +65,30 @@ class PostView(generic.CreateView):
 		form.instance.deadline = datetime.datetime.now()
 		return super(PostView, self).form_valid(form)
 
-# def checkNewPost(request):
-# 	if 'content' in request.POST:
-# 		if request.POST['content'] != "":
-# 			cursor = connection.cursor()
-# 			sql = 'INSERT INTO confession_post \
-# 			(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
-# 			VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
-# 			cursor.execute(sql, [])
+def checkNewPost(request, wall_owner = None):
+	if request.POST['new_content'] != "":
+		cursor = connection.cursor()
+		sql = 'INSERT INTO confession_post \
+		(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
+		VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
+		if 'fb_id' in request.session:
+			author = request.session['fb_id']
+		else:
+			author = '-1'
+		receiver = wall_owner
+		content = request.POST['new_content']
+		postedtime = datetime.datetime.now()
+		deadline = datetime.datetime.now()
+		visible = False
+		if ('fb_id' in request.session) and ('new_anonymous' not in request.POST):
+			displayed_sender = request.session['fullname']
+			displayed_sender_link = request.session['link']
+		else:
+			displayed_sender = 'Anonymous'
+			displayed_sender_link = '/'
+		cursor.execute(sql, [displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible])
+	else:
+		pass
 
 def HomeView(request):
 	checkUser(request)
@@ -82,8 +98,9 @@ def HomeView(request):
 
 def IndexView(request):
 	checkUser(request)
+	print request.session
 	if 'fb_id' not in request.session:
-		return HomeView(request)
+		return redirect('/')
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
 	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = \'' + str(request.session['fb_id']) + '\';'
@@ -106,8 +123,11 @@ def WallView(request, wall = None):
 				wall_owner = user.fb_id
 				wall_name = user.fullname
 				break
+			if 'new_content' in request.POST:
+				checkNewPost(request, wall_owner)
 			sql = 'SELECT * FROM confession_post WHERE visible AND receiver = ' + wall_owner
-			data_dict = {'posts_list': Post.objects.raw(sql), }
+			posts_list = Post.objects.raw(sql)
+			data_dict = {'posts_list': posts_list, }
 			data_dict['wall_name'] = wall_name
 			if 'fb_id' in request.session:
 				data_dict['logged_user_name'] = request.session['fullname']
