@@ -1,5 +1,15 @@
 {% extends 'base.html' %}
 {% block old_post %}
+<div class="page-header" id="banner">
+	<div class="row">
+		<div class="col-xs-6">
+			<h1 style="font-family:inherit">
+				<strong>{{ wall_name }} <a href="https://www.facebook.com/app_scoped_user_id/{{ logged_user }}"><img src="{{ STATIC_URL }}fb-icon.png"></a></strong>
+			</h1>
+		</div>
+	</div>
+</div>
+{% block new_post %}{% endblock %}
 <div class="bs-docs-section">
 	{% if posts_list %}
 		{% for post in posts_list %}
@@ -10,11 +20,16 @@
 			{% endif %}
 				<div class="panel-heading">
 					<h3 class="panel-title">
-						{% if post.displayed_sender_link != '/' %}
-							<b>From:</b> <a href="{{ post.displayed_sender_link }}">{{ post.displayed_sender }}</a> <br/>
-						{% else %}
-							<b>From:</b> {{ post.displayed_sender }} <br/>
-						{% endif %}
+						<h4>
+							{% if post.displayed_sender_link != '/' %}
+								<b>From: <a href="{{ post.displayed_sender_link }}" style="font-family:sans-serif">{{ post.displayed_sender }}</a> <a href="https://www.facebook.com/app_scoped_user_id/{{ post.author }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
+								</b>
+								<br/>
+							{% else %}
+								<b> From: {{ post.displayed_sender }} </b>
+								<br/>
+							{% endif %}
+						</h4>
 						<small style = "color: white">Sent at: {{ post.postedtime }}</small>
 					</h3>
 				</div>

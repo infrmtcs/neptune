@@ -101,6 +101,7 @@ def IndexView(request):
 	context_instance.update(csrf(request))
 	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = \'' + str(request.session['fb_id']) + '\';'
 	data_dict['posts_list'] = Post.objects.raw(sql)
+	data_dict['wall_name'] = request.session['fullname']
 	return render_to_response("index.html", data_dict, context_instance)
 
 def WallView(request, wall = None):
