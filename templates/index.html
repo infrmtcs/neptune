@@ -14,7 +14,7 @@
 {% if just_delete %}
 	<div class="alert alert-dismissable alert-danger">
 		<button type="button" class="close" data-dismiss="alert">×</button>
-		<strong>Done!</strong> You successfully deleted a message!</a>.
+		<strong>Done!</strong> You successfully deleted a message!
 	</div>
 {% endif %}
 {% block new_post %}{% endblock %}
@@ -31,10 +31,10 @@
 						<h4>
 							{% if post.displayed_sender_link != '/' %}
 								<b>From: 
-									<a href="/{{ post.displayed_sender_link }}" style="font-family:sans-serif">{{ post.displayed_sender }}</a> <a href="/post/{{ post.id }}"><img src="{{ STATIC_URL }}permalink.png"></a> <a href="https://www.facebook.com/app_scoped_user_id/{{ post.author }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
+									<a href="/{{ post.displayed_sender_link }}" style="font-family:sans-serif;color:white;">{{ post.displayed_sender }}</a> <a href="/post/{{ post.id }}" style="color:brown"><img src="{{ STATIC_URL }}permalink.png">#{{ post.id }}</a> <a href="https://www.facebook.com/app_scoped_user_id/{{ post.author }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
 								</b>
 							{% else %}
-								<b> From: {{ post.displayed_sender }} <a href="/post/{{ post.id }}"><img src="{{ STATIC_URL }}permalink.png"></a></b>
+								<b> From: {{ post.displayed_sender }} <a href="/post/{{ post.id }}"><img src="{{ STATIC_URL }}permalink.png">#{{ post.id }}</a></b>
 							{% endif %}
 							{% if logged %}
 								{% if logged_user == post.receiver %}

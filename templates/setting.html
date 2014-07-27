@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block old_post %}
+<div class="page-header" id="banner">
+	<div class="row">
+		<div class="col-xs-6">
+			<h2 style="font-family:inherit">
+				{% if wall_name %}
+					<a href="/{{ wall_link }}" style="color:white"><strong>{{ wall_name }}</strong></a> <a href="https://www.facebook.com/app_scoped_user_id/{{ logged_user }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
+				{% endif %}
+			</h2>
+		</div>
+	</div>
+</div>
+{% if success_change %}
+	<div class="alert alert-dismissable alert-success">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>Done!</strong> You successfully changed your wall's link!
+	</div>
+{% endif %}
+{% if fail_change %}
+	<div class="alert alert-dismissable alert-warning">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		This name has already been existing. Please kindly check again!
+	</div>
+{% endif %}
+{% if logged_user_link == logged_user %}
+	<div class="well">
+		<form class="form-horizontal" role="form" action="" method="POST">
+			{% csrf_token %}
+			{{ form.non_field_errors }}
+			<legend>Change your wall's link</legend>
+			<p>When you first logged in by Facebook, your wall's link is given by the ID from Facebook. You can change to another unique name <strong>one</strong> time. Please note that it must contain either alphanumeric characters or underscores and it must be different from other existing wall's link.</p>
+			<div class="form-group">
+				<div class="col-xs-6">
+					<input type="text" class="form-control" id="new_link" name="new_link" placeholder="Your new wall's link">
+				</div>
+				<div class="col-xs-6">
+					<button type="submit" class="btn btn-warning">Change</button>
+				</div>
+			</div>
+		</form>
+	</div>
+{% else %}
+	<div class="well">
+		<legend>Change your wall's link</legend>
+		<p>You've already changed your wall's link</p>
+	</div>{% endif %}
+{% endblock %}

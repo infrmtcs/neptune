@@ -29,7 +29,12 @@ def checkUser(request):
 		if len(list(users)):
 			for user in users:
 				if user.fullname != request.POST['name']:
-					pass
+					cursor = connection.cursor()
+					sql = 'UPDATE confession_user SET fullname = %s WHERE fb_id = %s';
+					cursor.execute(sql, [request.POST['name'], request.POST['id']]);
+					cursor = connection.cursor()
+					sql = 'UPDATE confession_post SET displayed_sender = %s WHERE author = %s';
+					cursor.execute(sql, [request.POST['name'], request.POST['id']]);
 			# print "old user"
 		else:
 			# print "new user added"
@@ -120,7 +125,7 @@ def HomeView(request):
 	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	return render_to_response("base.html", data_dict, context_instance) #change to home.html later
+	return render_to_response("home.html", data_dict, context_instance) #change to home.html later
 
 def IndexView(request):
 	checkUser(request)
@@ -173,7 +178,7 @@ def WallView(request, wall):
 		posts_list = Post.objects.raw(sql, wall_owner)
 		if posts_list:
 			data_dict['posts_list'] = posts_list			
-		data_dict['wall_name'] = wall_name
+		data_dict['wall_name'] = wall_name + '\'s wall'
 		data_dict['wall_link'] = wall_link
 		return render_to_response("wall.html", data_dict, context_instance)
 	else:
@@ -184,6 +189,12 @@ def PostView(request, post_id):
 	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
+	if 'new_comment' in request.POST:
+		checkNewComment(request)
+	if 'new_delete' in request.POST:
+		checkNewDelete(request)
+	if 'new_reveal' in request.POST:
+		checkNewReveal(request)
 	sql = 'SELECT * FROM confession_post WHERE visible AND id = %s'
 	posts_list = Post.objects.raw(sql, post_id)
 	exist_post = False
@@ -196,14 +207,63 @@ def PostView(request, post_id):
 	if exist_post:
 		for userss in users:
 			data_dict['posts_list'] = posts_list
-			data_dict['wall_name'] = userss.fullname
+			data_dict['wall_name'] = 'A post on ' + userss.fullname + '\'s wall'
 			data_dict['wall_link'] = userss.link
 			break
 	return render_to_response("index.html", data_dict, context_instance)
 
-# def SentView(request):
-# 	checkUser(request)
-# 	data_dict = logForHTML(request)
-# 	context_instance = RequestContext(request)
-# 	context_instance.update(csrf(request))
-# 	return render_to_response("sent.html", data_dict, context_instance)
+def SentView(request):
+	checkUser(request)
+	data_dict = logForHTML(request)
+	if 'fb_id' not in request.session:
+		return redirect('/', data_dict)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	if 'new_comment' in request.POST:
+		checkNewComment(request)
+	if 'new_delete' in request.POST:
+		checkNewDelete(request)
+	if 'new_reveal' in request.POST:
+		checkNewReveal(request)
+	sql = 'SELECT * FROM confession_post WHERE author = %s ORDER BY postedtime DESC'
+	posts_list = Post.objects.raw(sql, str(request.session['fb_id']))
+	exist_post = False
+	for postss in posts_list:
+		exist_post = True
+		break
+	if exist_post:
+		data_dict['posts_list'] = posts_list
+	data_dict['wall_name'] = 'Sent by ' + request.session['fullname']
+	data_dict['wall_link'] = request.session['link']
+	return render_to_response("index.html", data_dict, context_instance)
+
+def SettingView(request):
+	checkUser(request)
+	data_dict = logForHTML(request)
+	data_dict['wall_name'] = 'Setting - ' + request.session['fullname']
+	if 'fb_id' not in request.session:
+		return redirect('/', data_dict)
+	context_instance = RequestContext(request)
+	context_instance.update(csrf(request))
+	if 'new_link' in request.POST:
+		can_change = True
+		if request.POST['new_link'] not in ['admin', 'index', 'post', 'sent', 'setting']:
+			sql = 'SELECT * FROM confession_user WHERE link = %s'
+			users = User.objects.raw(sql, request.POST['new_link'])
+			for user in users:
+				can_change = False
+		else:
+			can_change = False
+		if can_change:
+			cursor = connection.cursor()
+			sql = 'UPDATE confession_post SET displayed_sender_link = %s WHERE author = %s';
+			cursor.execute(sql, [request.POST['new_link'], request.session['fb_id']]);
+			cursor = connection.cursor()
+			sql = 'UPDATE confession_user SET link = %s WHERE fb_id = %s';
+			cursor.execute(sql, [request.POST['new_link'], request.session['fb_id']]);
+			data_dict['logged_user_link'] = request.POST['new_link']
+			request.session['link'] = request.POST['new_link']
+			data_dict['success_change'] = True
+		else:
+			data_dict['fail_change'] = True
+	return render_to_response("setting.html", data_dict, context_instance)
