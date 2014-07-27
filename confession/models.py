@@ -18,8 +18,8 @@ class Post(models.Model):
 	author = models.CharField(max_length = 100)
 	receiver = models.CharField(max_length = 100)
 	content = models.TextField()
+	comment = models.TextField()
 	postedtime = models.DateTimeField()
-	deadline = models.DateTimeField()
 	visible = models.BooleanField()
 	def __unicode__(self):
 		return self.content

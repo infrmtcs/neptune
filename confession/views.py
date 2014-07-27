@@ -1,3 +1,4 @@
+#-*- encoding=UTF-8 -*-
 import datetime
 from django.core.urlresolvers import reverse
 from django.core.context_processors import csrf
@@ -53,7 +54,7 @@ def checkUser(request):
 def checkNewPost(request, wall_owner = None):
 	cursor = connection.cursor()
 	sql = 'INSERT INTO confession_post \
-	(displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible) \
+	(displayed_sender, displayed_sender_link, author, receiver, content, comment, postedtime, visible) \
 	VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
 	if 'fb_id' in request.session:
 		author = request.session['fb_id']
@@ -61,8 +62,8 @@ def checkNewPost(request, wall_owner = None):
 		author = '-1'
 	receiver = wall_owner
 	content = request.POST['new_content']
+	comment = u"×"
 	postedtime = datetime.datetime.now()
-	deadline = datetime.datetime.now()
 	visible = False
 	if ('fb_id' in request.session) and ('new_anonymous' not in request.POST):
 		displayed_sender = request.session['fullname']
@@ -70,7 +71,36 @@ def checkNewPost(request, wall_owner = None):
 	else:
 		displayed_sender = 'Anonymous'
 		displayed_sender_link = '/'
-	cursor.execute(sql, [displayed_sender, displayed_sender_link, author, receiver, content, postedtime, deadline, visible])
+	cursor.execute(sql, [displayed_sender, displayed_sender_link, author, receiver, content, comment, postedtime, visible])
+
+def checkNewComment(request):
+	visible = True
+	comment = request.POST['new_comment']
+	new_id = request.POST['new_id']
+	sql = 'UPDATE confession_post SET visible = %s, comment = %s WHERE id = %s';
+	cursor = connection.cursor()
+	cursor.execute(sql, [visible, comment, new_id])
+
+def checkNewDelete(request):
+	new_id = request.POST['new_id']
+	sql = 'DELETE FROM confession_post WHERE id = %s';
+	cursor = connection.cursor()
+	cursor.execute(sql, [new_id])
+
+def checkNewReveal(request):
+	new_id = request.POST['new_id']
+	sql = 'SELECT * FROM confession_post WHERE id = %s'
+	posts_list = Post.objects.raw(sql, [new_id])
+	for post in posts_list:
+		author = post.author
+		break
+	sql = 'SELECT * FROM confession_user WHERE fb_id = %s'
+	users_list = User.objects.raw(sql, [author])
+	for user in users_list:
+		sql = 'UPDATE confession_post SET displayed_sender = %s, displayed_sender_link = %s WHERE id = %s';
+		cursor = connection.cursor()
+		cursor.execute(sql, [user.fullname, user.link, new_id])
+		break
 
 def logForHTML(request):
 	data_dict = {}
@@ -99,43 +129,81 @@ def IndexView(request):
 		return redirect('/', data_dict)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = \'' + str(request.session['fb_id']) + '\';'
-	data_dict['posts_list'] = Post.objects.raw(sql)
+	if 'new_comment' in request.POST:
+		checkNewComment(request)
+	if 'new_delete' in request.POST:
+		checkNewDelete(request)
+	if 'new_reveal' in request.POST:
+		checkNewReveal(request)
+	sql = 'SELECT * FROM confession_post WHERE NOT visible AND receiver = %s ORDER BY postedtime DESC'
+	posts_list = Post.objects.raw(sql, str(request.session['fb_id']))
+	exist_post = False
+	for postss in posts_list:
+		exist_post = True
+		break
+	if exist_post:
+		data_dict['posts_list'] = posts_list
 	data_dict['wall_name'] = request.session['fullname']
+	data_dict['wall_link'] = request.session['link']
 	return render_to_response("index.html", data_dict, context_instance)
 
-def WallView(request, wall = None):
+def WallView(request, wall):
 	checkUser(request)
 	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	if wall is None:
-		return redirect('/')
+	if 'new_delete' in request.POST:
+		checkNewDelete(request)
+		data_dict['just_delete'] = True
+	if 'new_reveal' in request.POST:
+		checkNewReveal(request)
+	sql = 'SELECT * FROM confession_user WHERE link = %s';
+	users = User.objects.raw(sql, str(wall))
+	if len(list(users)):
+		for user in users:
+			wall_owner = user.fb_id
+			wall_name = user.fullname
+			wall_link = user.link
+			break
+		if 'new_content' in request.POST:
+			if request.POST['new_content'] != "":
+				data_dict['just_post'] = True
+				checkNewPost(request, wall_owner)
+		sql = 'SELECT * FROM confession_post WHERE visible AND receiver = %s ORDER BY postedtime DESC'
+		posts_list = Post.objects.raw(sql, wall_owner)
+		if posts_list:
+			data_dict['posts_list'] = posts_list			
+		data_dict['wall_name'] = wall_name
+		data_dict['wall_link'] = wall_link
+		return render_to_response("wall.html", data_dict, context_instance)
 	else:
-		sql = 'SELECT * FROM confession_user WHERE link = \'' + str(wall) + '\'';
-		users = User.objects.raw(sql)
-		if len(list(users)):
-			for user in users:
-				wall_owner = user.fb_id
-				wall_name = user.fullname
-				break
-			just_post = False
-			if 'new_content' in request.POST:
-				if request.POST['new_content'] != "":
-					just_post = True
-					checkNewPost(request, wall_owner)
-			sql = 'SELECT * FROM confession_post WHERE visible AND receiver = ' + wall_owner
-			posts_list = Post.objects.raw(sql)
-			data_dict['posts_list'] = posts_list
-			data_dict['just_post'] = just_post
-			data_dict['wall_name'] = wall_name
-			return render_to_response("wall.html", data_dict, context_instance)
-		else:
-			return redirect('/') #No such user
+		return redirect('/') #No such user
 
-def SentView(request):
+def PostView(request, post_id):
 	checkUser(request)
 	data_dict = logForHTML(request)
 	context_instance = RequestContext(request)
 	context_instance.update(csrf(request))
-	return render_to_response("sent.html", data_dict, context_instance)
+	sql = 'SELECT * FROM confession_post WHERE visible AND id = %s'
+	posts_list = Post.objects.raw(sql, post_id)
+	exist_post = False
+	for postss in posts_list:
+		print postss.receiver
+		sql = 'SELECT * FROM confession_user WHERE fb_id = %s'
+		users = User.objects.raw(sql, postss.receiver)
+		exist_post = True
+		break
+	if exist_post:
+		for userss in users:
+			data_dict['posts_list'] = posts_list
+			data_dict['wall_name'] = userss.fullname
+			data_dict['wall_link'] = userss.link
+			break
+	return render_to_response("index.html", data_dict, context_instance)
+
+# def SentView(request):
+# 	checkUser(request)
+# 	data_dict = logForHTML(request)
+# 	context_instance = RequestContext(request)
+# 	context_instance.update(csrf(request))
+# 	return render_to_response("sent.html", data_dict, context_instance)

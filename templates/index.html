@@ -3,12 +3,20 @@
 <div class="page-header" id="banner">
 	<div class="row">
 		<div class="col-xs-6">
-			<h1 style="font-family:inherit">
-				<strong>{{ wall_name }} <a href="https://www.facebook.com/app_scoped_user_id/{{ logged_user }}"><img src="{{ STATIC_URL }}fb-icon.png"></a></strong>
-			</h1>
+			<h2 style="font-family:inherit">
+				{% if wall_name %}
+					<a href="/{{ wall_link }}" style="color:white"><strong>{{ wall_name }}</strong></a> <a href="https://www.facebook.com/app_scoped_user_id/{{ logged_user }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
+				{% endif %}
+			</h2>
 		</div>
 	</div>
 </div>
+{% if just_delete %}
+	<div class="alert alert-dismissable alert-danger">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		<strong>Done!</strong> You successfully deleted a message!</a>.
+	</div>
+{% endif %}
 {% block new_post %}{% endblock %}
 <div class="bs-docs-section">
 	{% if posts_list %}
@@ -22,24 +30,83 @@
 					<h3 class="panel-title">
 						<h4>
 							{% if post.displayed_sender_link != '/' %}
-								<b>From: <a href="{{ post.displayed_sender_link }}" style="font-family:sans-serif">{{ post.displayed_sender }}</a> <a href="https://www.facebook.com/app_scoped_user_id/{{ post.author }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
+								<b>From: 
+									<a href="/{{ post.displayed_sender_link }}" style="font-family:sans-serif">{{ post.displayed_sender }}</a> <a href="/post/{{ post.id }}"><img src="{{ STATIC_URL }}permalink.png"></a> <a href="https://www.facebook.com/app_scoped_user_id/{{ post.author }}"><img src="{{ STATIC_URL }}fb-icon.png"></a>
 								</b>
-								<br/>
 							{% else %}
-								<b> From: {{ post.displayed_sender }} </b>
-								<br/>
+								<b> From: {{ post.displayed_sender }} <a href="/post/{{ post.id }}"><img src="{{ STATIC_URL }}permalink.png"></a></b>
 							{% endif %}
+							{% if logged %}
+								{% if logged_user == post.receiver %}
+									<form class="pull-right" role="form" action="" method="POST">
+										{% csrf_token %}
+										{{ form.non_field_errors }}
+										<button type="submit" class="btn btn-primary pull-right">Delete</button>
+										<input type="hidden" name="new_id" value="{{ post.id }}">
+										<input type="hidden" name="new_delete" value="True">
+									</form>
+								{% endif %}
+							{% endif %}
+							{% if logged %}
+								{% if logged_user == post.author and post.displayed_sender_link == '/' %}
+									<form class="pull-right" role="form" action="" method="POST">
+										{% csrf_token %}
+										{{ form.non_field_errors }}
+										<button type="submit" class="btn btn-danger pull-right">Reveal</button>
+										<input type="hidden" name="new_id" value="{{ post.id }}">
+										<input type="hidden" name="new_reveal" value="True">
+									</form>
+								{% endif %}
+							{% endif %}
+							<br/>
 						</h4>
 						<small style = "color: white">Sent at: {{ post.postedtime }}</small>
 					</h3>
 				</div>
 				<div class="panel-body">
-					<p><strong>{{ post.content }}</strong></p>
+					<div class="row">
+						<div class="col-sm-11 col-xs-6">
+							<p><strong>{{ post.content }}</strong></p>
+						</div>
+						<div class="col-sm-1 col-xs-6">
+							{% if logged %}
+								{% if logged_user == post.receiver and post.visible%}
+									<div class="fb-share-button pull-right" data-type="button" data-href="/post/{{ post.id }}"></div>
+								{% endif %}
+							{% endif %}
+						</div>
+					</div>
 				</div>
+				{% if post.visible %}
+					<div class="panel-footer">
+						<p><strong>{{ post.comment }}</strong></p>
+					</div>
+				{% endif %}
+				{% if logged %}
+					{% if logged_user == post.receiver and not post.visible %}
+						<div class="panel-footer">
+							<form class="form-horizontal" role="form" action="" method="POST">
+								{% csrf_token %}
+								{{ form.non_field_errors }}
+								<div class="form-group">
+									<div class="col-sm-11 col-xs-6">
+										<input type="text" class="form-control" id="new_comment" name="new_comment" placeholder="Write your comment here.">
+									</div>
+									<div class="col-sm-1 col-xs-6">
+										<button type="submit" class="btn btn-default pull-right">Publish</button>
+									</div>
+									<div>
+										<input type="hidden" name="new_id" value="{{ post.id }}">
+									</div>
+								</div>
+							</form>
+						</div>
+					{% endif %}
+				{% endif %}
 			</div>
 		{% endfor %}
 	{% else %}
-		<p>No post are available.</p>
+		<h2>No post are available.</h2>
 	{% endif %}
 </div>
 {% endblock %}
