@@ -30,16 +30,16 @@ def checkUser(request):
 			for user in users:
 				if user.fullname != request.POST['name']:
 					cursor = connection.cursor()
-					sql = 'UPDATE confession_user SET fullname = %s WHERE fb_id = %s';
+					sql = 'UPDATE confession_user SET fullname = %s WHERE fb_id = %s; COMMIT;';
 					cursor.execute(sql, [request.POST['name'], request.POST['id']]);
 					cursor = connection.cursor()
-					sql = 'UPDATE confession_post SET displayed_sender = %s WHERE author = %s';
+					sql = 'UPDATE confession_post SET displayed_sender = %s WHERE author = %s AND displayed_sender_link != \'/\'; COMMIT;';
 					cursor.execute(sql, [request.POST['name'], request.POST['id']]);
 			# print "old user"
 		else:
 			# print "new user added"
 			cursor = connection.cursor()
-			sql = 'INSERT INTO confession_user(fb_id, fullname, link, postcount) VALUES(%s, %s, %s, 0)'
+			sql = 'INSERT INTO confession_user(fb_id, fullname, link, postcount) VALUES(%s, %s, %s, 0); COMMIT;'
 			cursor.execute(sql, [request.POST['id'], request.POST['name'], request.POST['id']])
 			# print "registered"
 		sql = 'SELECT * FROM confession_user WHERE fb_id = %s;'
@@ -60,7 +60,7 @@ def checkNewPost(request, wall_owner = None):
 	cursor = connection.cursor()
 	sql = 'INSERT INTO confession_post \
 	(displayed_sender, displayed_sender_link, author, receiver, content, comment, postedtime, visible) \
-	VALUES(%s, %s, %s, %s, %s, %s, %s, %s)'
+	VALUES(%s, %s, %s, %s, %s, %s, %s, %s); COMMIT;'
 	if 'fb_id' in request.session:
 		author = request.session['fb_id']
 	else:
@@ -82,13 +82,13 @@ def checkNewComment(request):
 	visible = True
 	comment = request.POST['new_comment']
 	new_id = request.POST['new_id']
-	sql = 'UPDATE confession_post SET visible = %s, comment = %s WHERE id = %s';
+	sql = 'UPDATE confession_post SET visible = %s, comment = %s WHERE id = %s; COMMIT;';
 	cursor = connection.cursor()
 	cursor.execute(sql, [visible, comment, new_id])
 
 def checkNewDelete(request):
 	new_id = request.POST['new_id']
-	sql = 'DELETE FROM confession_post WHERE id = %s';
+	sql = 'DELETE FROM confession_post WHERE id = %s; COMMIT;';
 	cursor = connection.cursor()
 	cursor.execute(sql, [new_id])
 
@@ -102,7 +102,7 @@ def checkNewReveal(request):
 	sql = 'SELECT * FROM confession_user WHERE fb_id = %s'
 	users_list = User.objects.raw(sql, [author])
 	for user in users_list:
-		sql = 'UPDATE confession_post SET displayed_sender = %s, displayed_sender_link = %s WHERE id = %s';
+		sql = 'UPDATE confession_post SET displayed_sender = %s, displayed_sender_link = %s WHERE id = %s; COMMIT;';
 		cursor = connection.cursor()
 		cursor.execute(sql, [user.fullname, user.link, new_id])
 		break
@@ -256,10 +256,10 @@ def SettingView(request):
 			can_change = False
 		if can_change:
 			cursor = connection.cursor()
-			sql = 'UPDATE confession_post SET displayed_sender_link = %s WHERE author = %s';
+			sql = 'UPDATE confession_post SET displayed_sender_link = %s WHERE author = %s; COMMIT;';
 			cursor.execute(sql, [request.POST['new_link'], request.session['fb_id']]);
 			cursor = connection.cursor()
-			sql = 'UPDATE confession_user SET link = %s WHERE fb_id = %s';
+			sql = 'UPDATE confession_user SET link = %s WHERE fb_id = %s; COMMIT;';
 			cursor.execute(sql, [request.POST['new_link'], request.session['fb_id']]);
 			data_dict['logged_user_link'] = request.POST['new_link']
 			request.session['link'] = request.POST['new_link']
